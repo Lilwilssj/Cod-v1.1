@@ -1,6 +1,6 @@
 
 ```markdown
-# Callejon Oriente Digital v1.1
+Callejon Oriente Digital v1.1
 
 Por el momento el sistema de entregas se encuentra en desarrollo...
 
