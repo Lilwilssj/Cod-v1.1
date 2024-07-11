@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../integrante.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap">
+    <title>Registro - Callejón Oriente v00.1</title>
+    <link rel="icon" href="logo/1.png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    
+<main class="main">
+      <section class="hero__section container">
+        <article class="hero__arcticle">
+            <h1 class="hero__title">Registrar nuevo integrante</h1>
+            <div class="hero__container container">
+             <form id="registerMemberForm" class="hero__form">
+
+                <div class="hero__container--form">
+                    <p class="form__text">Nombres:</p>
+                    <input type="text" id="nombres" name="nombres" class="input__info" placeholder="Nombres" required>
+                </div>
+
+                <div class="hero__container--form">
+                    <p class="form__text">Apellidos:</p>
+                    <input type="text" id="apellidos" name="apellidos" class="input__info" placeholder="Apellidos" required>
+                </div>
+
+                <div class="hero__container--form">
+                    <p class="form__text">Cedula:</p>
+                    <input type="text" id="cedula_de_identidad" name="cedula_de_identidad" class="input__info" placeholder="Cedula" required>
+                </div>
+
+                <div class="hero__container--form">
+                    <p class="form__text">Teléfono:</p>
+                    <input type="tel" id="telefono" name="telefono" class="input__info" placeholder="Teléfono" required>
+                </div>
+
+                <div class="hero__container--form">
+                    <p class="form__text">Fecha de nacimiento:</p>
+                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="input__info" placeholder="Fecha de nacimiento" required>
+                </div>
+
+                <div class="hero__container--form">
+                    <p class="form__text">Carnet de la patria:</p>
+                    <input type="text" id="carnet_de_patria" name="carnet_de_patria" class="input__info" placeholder="Carnet de la patria" required>
+                </div>
+
+                <div class="hero__container--form hero__container--form-modif">
+                    <p class="form__text">Escalera:</p>
+                    <select id="escalera" name="escalera" required class="input__info">
+                        <option value="" disabled selected>Escalera</option>
+                        <option value="1">Calle Principal 1</option>
+                        <option value="2">Calle Principal 2</option>
+                        <option value="3">Calle Principal 3</option>
+                        <option value="4">Escalera #1</option>
+                        <option value="5">Escalera #2</option>
+                        <option value="6">Escalera #3</option>
+                        <option value="7">Escalera #4</option>
+                        <option value="8">Escalera #5</option>
+                        <option value="9">Escalera #6</option>
+                        <option value="10">Escalera #7</option>
+                        <option value="11">Escalera #8</option>
+                        <option value="12">Escalera #9</option>
+                    </select>
+                </div>
+                <div class="input__boton">
+                    <button type="submit" class="input__btn">Ingresar</button>
+                    <button type="button" class="input__btn input__btn--cta" onclick="limpiarCampos()">Limpiar campos</button>
+                </div>
+
+             </form>
+             <a href="/index" class="leave"><---Salir</a>
+        </article>
+      </section>
+</main>
+
+<script>
+    $(document).ready(function() {
+        $('#registerMemberForm').on('submit', function(e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+            console.log('Datos del formulario:', formData); 
+
+            // Realizar petición GET para verificar si el miembro ya existe
+            $.get('/cedula', function(response) {
+                const miembros = response.miembros;
+                let isDuplicate = false;
+
+                // Verificar si el miembro ya existe con la cédula de identidad
+                miembros.forEach(function(miembro) {
+                    if (miembro.cedula_de_identidad === $('#cedula_de_identidad').val()) {
+                        isDuplicate = true;
+                    }
+                });
+
+                if (isDuplicate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Esta cédula ya se encuentra registrada en el sistema!'
+                    });
+                } else {
+                    // Enviar datos de registro al servidor si no hay duplicados
+                    $.post('/register-member', formData, function(response) {
+                        console.log('Respuesta del servidor:', response);
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Registro exitoso',
+                                text: response.message
+                            }).then(() => {
+                                window.location.href = response.redirectUrl; // Redirigir a la página de inicio
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.error
+                            });
+                        }
+                    }).fail(function(xhr) {
+                        const error = xhr.responseJSON ? xhr.responseJSON.error : 'Error al registrar miembro';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error
+                        });
+                    });
+                }
+            });
+        });
+    });
+
+    //Funcion para limpiar los campos
+    function limpiarCampos() {
+        $('#nombres').val('');
+        $('#apellidos').val('');
+        $('#cedula_de_identidad').val('');
+        $('#telefono').val('');
+        $('#fecha_nacimiento').val('');
+        $('#carnet_de_patria').val('');
+        $('#escalera').val('');
+    }
+
+</script>
+</body>
+</html>

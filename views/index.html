@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <title>COD V1.1 - Dashboard</title>
+    <link rel="icon" href="logo/1.png">
+    <script src="https://kit.fontawesome.com/2b2fe1ef11.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body id="body">
+    <header class="hero__header">
+            <div class="hero__container container">
+               <ul class="hero__ul">
+                <img src="logo/logo.png" alt="logo" class="hero__logo" width="45px" height="45px" > 
+                  <li class="hero__li">admin@callejonoriente.xyz</li>
+                  <li class="hero__li" id="username"></li>
+                  <li href="#" class="hero__li hero__li--cta" onclick="mostrarProximamente(event)"><i class="fa-solid fa-user"></i> Perfil</li>  
+               </ul>
+            </div>
+    </header>
+    <main>
+        <div class="menu__side" id="menu_side">
+            <div class="name__page">
+            </div>
+            <div class="options__menu">
+                <a href="#" class="menu" onclick="mostrarProximamente(event)">
+                    <div class="options">
+                        <i class="fa-solid fa-user-group" title="Nucleo Familiar"></i>
+                        <p class="options__texts">Nucleo Familiar</p>
+                    </div>
+                </a>
+                <a href="/integrante" class="select">
+                    <div class="options">
+                        <i class="fa-regular fa-registered" title="Registrar Miembro"></i>
+                        <p class="options__texts">Registrar Miembro</p>
+                    </div>
+                </a>
+                <a href="#" class="menu" onclick="mostrarProximamente(event)">
+                    <div class="options">
+                        <i class="fa-regular fa-address-book" title="Recuperar Miembro"></i>
+                        <p class="options__texts">Recuperar Miembro</p>
+                    </div>
+                </a>
+                <a href="#" class="menu" onclick="mostrarProximamente(event)">
+                    <div class="options">
+                        <i class="fa-solid fa-fan" title="Sorteo"></i>
+                        <p class="options__texts">Sorteo</p>
+                    </div>
+                </a>
+                <a href="/entregas" class="menu">
+                    <div class="options">
+                        <i class="fa-solid fa-cart-shopping" title="Combos"></i>
+                        <p class="options__texts">Combos</p>
+                    </div>
+                </a>
+                <a href="/entregas" class="menu">
+                    <div class="options">
+                        <i class="fa-solid fa-bag-shopping" title="Clap"></i>
+                        <p class="options__texts">Claps</p>
+                    </div>
+                </a>
+                <a href="/entregas" class="menu">
+                    <div class="options">
+                        <i class="fa-solid fa-fire-flame-simple" title="Gas"></i>
+                        <p class="options__texts">Gas</p>
+                    </div>
+                </a>
+                <a href="/logout" class="menu">
+                    <div class="options">
+                        <i class="fa-solid fa-right-from-bracket" title="Cerrar Sesión"></i>
+                        <p class="options__texts options__texts--cta">Cerrar Sesión</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    
+        <div class="hero__info container">
+            <ul class="hero__contadores">
+                <li class="hero__contador"><i class="fa-solid fa-people-group"></i><p class="contadorparagraph">Familias Totales: <span id="totalMiembros">0</span></p></li>
+                <li class="hero__contador"><i class="fa-solid fa-bullhorn"></i><p class="contadorparagraph">Voceros en línea: <span id="jefesEnLinea">0</span></p></li>
+                <li class="hero__contador"><i class="fa-solid fa-star"></i><p class="contador__paragraph">Admin en línea: <span id="adminEnLinea">0</span></p></li>
+            </ul>
+        </div>
+    
+        <div id="tables-container"></div>
+    </main>
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function obtenerNombreUsuario() {
+                $.get('/get-username', function(response) {
+                    $('#username').text('V-' + response.username);
+                }).fail(function(xhr) {
+                    console.error('Error al obtener el nombre de usuario:', xhr);
+                    $('#username').text('Error al cargar nombre de usuario');
+                });
+            }
+            obtenerNombreUsuario();
+
+            async function cargarTablas() {
+                const titles = [
+                    "Calle Principal #1 - Toca para visualizar ⬇️", "Calle Principal #2 - Toca para visualizar ⬇️", "Calle Principal #3 - Toca para visualizar ⬇️",
+                    "Escalera #1 - Toca para visualizar ⬇️", "Escalera #2 - Toca para visualizar ⬇️", "Escalera #3 - Toca para visualizar ⬇️",
+                    "Escalera #4 - Toca para visualizar ⬇️", "Escalera #5 - Toca para visualizar ⬇️", "Escalera #6 - Toca para visualizar ⬇️",
+                    "Escalera #7 - Toca para visualizar ⬇️", "Escalera #8 - Toca para visualizar ⬇️", "Escalera #9 - Toca para visualizar ⬇️"
+                ];
+
+                try {
+                    const response = await fetch('/miembros');
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    const data = await response.json();
+                    const { miembrosPorEscalera } = data;
+
+                    const container = $('#tables-container');
+
+                    miembrosPorEscalera.forEach((miembros, index) => {
+                        const tableTitle = $('<div class="table-header"></div>').text(titles[index]);
+                        const tableContent = $('<div class="table-content"></div>');
+                        const table = $('<table class="table-data"></table>');
+
+                        const tableHead = $('<thead><tr><th>Nombres</th><th>Apellidos</th><th>Cédula de Identidad</th><th>Teléfono</th><th>Fecha de Nacimiento</th><th>Carnet de Patria</th><th>Accion</th></tr></thead>');
+                        const tableBody = $('<tbody></tbody>');
+
+                        miembros.forEach(miembro => {
+                            // Obtener solo la fecha sin la hora y la zona horaria
+                            const fechaNacimiento = new Date(miembro.fecha_nacimiento);
+                            const fechaFormateada = fechaNacimiento.toLocaleDateString('es-ES', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit'
+                            });
+
+                            const row = `<tr>
+                                <td>${miembro.nombres}</td>
+                                <td>${miembro.apellidos}</td>
+                                <td>${miembro.cedula_de_identidad}</td>
+                                <td>${miembro.telefono}</td>
+                                <td>${fechaFormateada}</td>
+                                <td>${miembro.carnet_de_patria}</td>
+                                <td>
+                                    <button class="editar-btn" data-id="${miembro.id}">✍️ Editar</button> 
+                                    <button class="eliminar-btn" data-id="${miembro.id}">♻️ Eliminar</button>
+                                </td>
+                            </tr>`;
+                            tableBody.append(row);
+                        });
+
+                        table.append(tableHead);
+                        table.append(tableBody);
+                        tableContent.append(table);
+                        container.append(tableTitle);
+                        container.append(tableContent);
+
+                        // Agregar evento para mostrar/ocultar tabla al hacer clic en el encabezado
+                        tableTitle.click(function() {
+                            tableContent.slideToggle(50);
+                        });
+                    });
+
+                    // Agregar eventos a los botones de editar y eliminar
+                    $('.editar-btn').click(function() {
+                        const miembroId = $(this).data('id');
+                        // Redirigir a la página de edición con el ID del miembro
+                        window.location.href = `/editar?id=${miembroId}`;
+                    });
+
+                    $('.eliminar-btn').click(function() {
+                        const miembroId = $(this).data('id');
+                        if (confirm('¿Estás seguro de que deseas eliminar este miembro?')) {
+                            $.ajax({
+                                url: `/delete-member/${miembroId}`,
+                                type: 'DELETE',
+                                success: function(result) {
+                                    alert('Miembro eliminado exitosamente');
+                                    location.reload();
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error al eliminar miembro:', xhr);
+                                    alert('Error al eliminar miembro');
+                                }
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error fetching members data:', error);
+                }
+            }
+
+            cargarTablas();
+        });
+
+        $(document).ready(function() {
+    function actualizarContadores() {
+        // Contador de Miembros Totales en Línea
+        $.get('/contador-miembros', function(response) {
+            $('#totalMiembros').text(response.totalMiembros);
+        }).fail(function(xhr) {
+            console.error('Error al obtener contador de miembros:', xhr);
+            $('#totalMiembros').text('Error al cargar');
+        });
+
+        // Contador de Jefes en Línea
+        $.get('/contador-jefes', function(response) {
+            $('#jefesEnLinea').text(response.jefesEnLinea);
+        }).fail(function(xhr) {
+            console.error('Error al obtener contador de jefes:', xhr);
+            $('#jefesEnLinea').text('Error al cargar');
+        });
+
+        // Contador de Admins en Línea
+        $.get('/contador-admin', function(response) {
+            $('#adminEnLinea').text(response.adminEnLinea);
+        }).fail(function(xhr) {
+            console.error('Error al obtener contador de admin:', xhr);
+            $('#adminEnLinea').text('Error al cargar');
+        });
+    }
+
+    actualizarContadores();
+    setInterval(actualizarContadores, 10000);
+});
+
+
+    // Función para mostrar el mensaje "Próximamente"
+    function mostrarProximamente(event) {
+        event.preventDefault(); // Prevenir la acción por defecto del enlace
+        Swal.fire({
+            icon: 'info',
+            title: 'Próximamente',
+            text: 'Esta función estará disponible próximamente.'
+        });
+    }
+    </script>
+</body>
+</html>

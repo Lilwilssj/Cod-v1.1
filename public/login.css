@@ -1,0 +1,128 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: rgb(27, 27, 27);
+}
+.container{
+    margin: 0 auto;
+    width: 70%;
+    overflow: hidden;
+    max-width: 1200px;
+}
+.hero{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.hero__picture{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 12em;
+    
+}
+.img__logo{
+    display: block;
+    object-fit: cover;
+    width: 300px;
+    height: 360x;
+}
+.hero__version{
+    color: rgba(33, 170, 224, 1); 
+    margin-left: 25em;
+    font-family: 'Syne', sans-serif;
+}
+.hero__paragraph{ 
+    color: white;
+    text-transform: uppercase;
+    font-family: 'Syne', sans-serif;
+    text-align: center;
+    font-size: 3rem;
+    width: 500px;
+}
+
+.hero__container{
+    margin-top: 10em;
+}
+.hero__text{
+    color: #ffffff;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-size: 3rem;
+    text-align: center;
+}
+.hero__paragraph--text{
+    color: white;
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-size: .9rem;
+    text-align: center;
+}
+.form{
+    display: flex;
+    flex-direction: column;
+    margin: 1.5em;
+    gap: .8em;
+    
+}
+.form__username{
+    width: 250px;
+    height: 50px;
+    background: rgb(51, 51, 51);
+    color: white;
+    padding: 18px 26px;
+    border-radius: 30px;
+    border: 10px;
+}
+.form__username::placeholder{
+color: white;
+}
+.form__password{
+    width: 250px;
+    height: 50px;
+    background: rgb(51, 51, 51);
+    padding: 18px 26px;
+    border-radius: 30px;
+    border: none
+}
+.form__password::placeholder{
+    color: white;
+}
+.btn__iniciar{
+    width: 250px;
+    height: 50px;
+    background: rgba(33, 170, 224, 1); 
+    color: white; 
+    padding: 18px 26px;
+    border-radius: 30px;
+    border: none
+}
+.btn__iniciar:hover{
+    cursor: pointer;
+}
+.registro{
+    text-decoration: none;
+    color: white;
+    font-family: "Poppins", sans-serif;
+}
+.registro:hover{
+   color:  rgba(33, 170, 224, 1); 
+   text-decoration-line: underline;
+}
+
+/*registro*/
+.form__role{
+    width: 174px;
+    height: 50px;
+    background: rgb(51, 51, 51);
+    color: white;
+    padding: 18px 26px;
+    border-radius: 30px;
+    border: 10px;
+}
+hr{
+    background-color: white;
+}
+

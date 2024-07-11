@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../entregas.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+    <title>Entregas - Callejón Oriente v00.1</title>
+    <link rel="icon" href="logo/1.png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <header class="header__leave">
+        <div class="leave">
+            <a href="/index" class="a__leave">&lt;- Salir</a>
+        </div>
+    </header>
+    <main>
+        <section class="hero container">
+            <div class="hero__container">
+                <h2 class="hero__text">Registro gas</h2>
+                <article class="hero__box">
+                    <p class="hero__paragraph">Cédula de identidad:</p>
+                    <input class="hero__input" type="text" id="cedulaGas" placeholder="Ingrese Cédula"/>
+                    <div class="hero__btn">
+                        <button class="btn" onclick="registrarEntrega('gas')">Registrar</button>
+                        <button class="btn btn--cta" onclick="limpiarCampos('cedulaGas')">Limpiar</button>
+                    </div>
+                </article>
+            </div>
+
+            <div class="hero__container">
+                <h2 class="hero__text">Registro CLAP</h2>
+                <article class="hero__box">
+                    <p class="hero__paragraph">Cédula de identidad:</p>
+                    <input class="hero__input" type="text" id="cedulaClap" placeholder="Ingrese Cédula"/>
+                    <div class="hero__btn">
+                        <button class="btn" onclick="registrarEntrega('clap')">Registrar</button>
+                        <button class="btn btn--cta" onclick="limpiarCampos('cedulaClap')">Limpiar</button>
+                    </div>
+                </article>
+            </div>
+
+            <div class="hero__container hero__container--cta">
+                <h2 class="hero__text">Registro Combo</h2>
+                <article class="hero__box">
+                    <p class="hero__paragraph">Cédula de identidad:</p>
+                    <input class="hero__input" type="text" id="cedulaCombo" placeholder="Ingrese Cédula"/>
+                    <div class="hero__btn">
+                        <button class="btn" onclick="registrarEntrega('combo')">Registrar</button>
+                        <button class="btn btn--cta" onclick="limpiarCampos('cedulaCombo')">Limpiar</button>
+                    </div>
+                </article>
+            </div>
+
+            <div class="hero__container hero__container--cta">
+                <h2 class="hero__text">Admin: Reiniciar Entregas</h2>
+                <article class="hero__box">
+                    <div class="hero__btn">
+                        <button class="btn btn--cta" onclick="reiniciarEntregas()">Reiniciar Entregas</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Función para limpiar campos
+        function limpiarCampos(id) {
+            document.getElementById(id).value = '';
+        }
+
+        // Función para registrar entrega
+        async function registrarEntrega(tipo) {
+            const cedula = document.getElementById('cedula' + tipo.charAt(0).toUpperCase() + tipo.slice(1)).value;
+            const tipoEntrega = tipo.toLowerCase();
+
+            try {
+                const response = await fetch('/registrar-entrega', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ cedula, tipo: tipoEntrega })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Entrega registrada',
+                        text: `La entrega de ${tipoEntrega} ha sido registrada satisfactoriamente.`,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.error || `No se pudo registrar la entrega de ${tipoEntrega}.`
+                    });
+                }
+            } catch (error) {
+                console.error('Error al registrar entrega:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Hubo un problema al intentar registrar la entrega de ${tipoEntrega}.`
+                });
+            }
+        }
+
+        // Función para reiniciar entregas (solo admin)
+        async function reiniciarEntregas() {
+            try {
+                const response = await fetch('/reiniciar-entregas', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Entregas reiniciadas',
+                        text: 'Todas las entregas han sido reiniciadas satisfactoriamente.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.error || 'No se pudo reiniciar las entregas.'
+                    });
+                }
+            } catch (error) {
+                console.error('Error al reiniciar entregas:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema al intentar reiniciar las entregas.'
+                });
+            }
+        }
+    </script>
+</body>
+</html>
